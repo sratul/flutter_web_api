@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_web_api/add_user.dart';
 import 'package:flutter_web_api/api_handler.dart';
+import 'package:flutter_web_api/edit_page.dart';
 import 'package:flutter_web_api/model.dart';
 
 class MainPage extends StatefulWidget {
@@ -11,38 +13,82 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   ApiHandler apiHandler = ApiHandler();
-  late List<User> data =[];
+  late List<User> data = [];
 
-  void getData() async{
+  void getData() async {
     data = await apiHandler.getUserData();
-    setState(() {
-      
-    });
+
+    setState(() {});
+  }
+
+  void deleteUser(int userId) async {
+    await apiHandler.deleteUser(userId: userId);
+
+    setState(() {});
   }
 
   @override
   void initState() {
     getData();
-   super.initState();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: const Text("FlutterApi"),
-    centerTitle: true,
-    backgroundColor: Colors.deepPurple,
-    foregroundColor: Colors.white,),
-    bottomNavigationBar: MaterialButton(color: Colors.teal,textColor: Colors.white, padding: EdgeInsets.all(10),onPressed: getData,child: Text("Refresh"),),
-    body: Column(
-      children: [
-        ListView.builder(shrinkWrap: true,itemCount:data.length ,itemBuilder: (BuildContext context, int index){
-          return ListTile(
-            leading: Text("${data[index].userId}"),
-            title: Text(data[index].name),
-            subtitle: Text(data[index].email),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("FlutterApi"),
+        centerTitle: true,
+        backgroundColor: Colors.deepPurple,
+        foregroundColor: Colors.white,
+      ),
+      bottomNavigationBar: MaterialButton(
+        color: Colors.teal,
+        textColor: Colors.white,
+        padding: EdgeInsets.all(10),
+        onPressed: getData,
+        child: Text("Refresh"),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddUser()),
           );
-        },)
-      ],
-    ),);
+        },
+        child: Icon(Icons.add),
+      ),
+      body: Column(
+        children: [
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: data.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditPage(user: data[index]),
+                    ),
+                  );
+                },
+                leading: Text("${data[index].userId}"),
+                title: Text(data[index].name),
+                subtitle: Text(data[index].email),
+                trailing: IconButton(
+                  onPressed: () {
+                    deleteUser(data[index].userId);
+                  },
+                  icon: Icon(Icons.delete_outline),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
