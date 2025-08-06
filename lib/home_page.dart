@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_web_api/add_user.dart';
 import 'package:flutter_web_api/api_handler.dart';
 import 'package:flutter_web_api/edit_page.dart';
+import 'package:flutter_web_api/find_user.dart';
 import 'package:flutter_web_api/model.dart';
 
 class MainPage extends StatefulWidget {
@@ -49,16 +50,35 @@ class _MainPageState extends State<MainPage> {
         onPressed: getData,
         child: Text("Refresh"),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddUser()),
-          );
-        },
-        child: Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            heroTag: 1,
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: ((context) => FindUser())),
+              );
+            },
+            child: Icon(Icons.search),
+          ),
+          SizedBox(height: 10),
+          FloatingActionButton(
+            heroTag: 2,
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddUser()),
+              );
+            },
+            child: Icon(Icons.add),
+          ),
+        ],
       ),
       body: Column(
         children: [

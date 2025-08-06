@@ -89,4 +89,27 @@ class ApiHandler {
 
     return response;
   }
+
+  Future<User> getUserById({required int userId}) async {
+    final uri = Uri.parse("$baseUri/$userId");
+    User? user;
+
+    try {
+      final response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode >= 200 && response.statusCode <= 299) {
+        final Map<String, dynamic> jsonData = json.decode(response.body);
+
+        user = User.fromJson(jsonData);
+      }
+    } catch (e) {
+      return user!;
+    }
+    return user!;
+  }
 }
