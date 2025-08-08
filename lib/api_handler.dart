@@ -1,10 +1,12 @@
-import 'dart:convert';
+import 'dart:convert'; // Needed for json.encode and json.decode
 
 import 'package:flutter_web_api/model.dart';
 import 'package:http/http.dart' as http;
 
 class ApiHandler {
   final String baseUri = "https://localhost:7075/api/Users";
+
+  /// Fetches the list of all users from the API
 
   Future<List<User>> getUserData() async {
     List<User> data = [];
@@ -16,9 +18,11 @@ class ApiHandler {
         uri,
         headers: <String, String>{
           'Content-type': 'application/json; charset=UTF-8',
+          // notify the server that the body is a JSON string with UTF-8 encoding — which is expected and commonly used in REST APIs
         },
       );
 
+      // Check for HTTP success status
       if (response.statusCode >= 200 && response.statusCode <= 299) {
         final List<dynamic> jsonData = json.decode(response.body);
 
@@ -30,11 +34,15 @@ class ApiHandler {
     return data;
   }
 
-  Future<http.Response> UpdateUser({
+  /// Updates the user with [userId] on the API
+
+  Future<http.Response> updateUser({
     required int userId,
     required User user,
   }) async {
     final uri = Uri.parse("$baseUri/$userId");
+    // example https://localhost:7075/api/Users/5
+    // where userId = 5
 
     late http.Response response;
 
@@ -52,7 +60,9 @@ class ApiHandler {
     return response;
   }
 
-  Future<http.Response> addUser({required User user}) async {
+  // function to add User
+  // uses named parameter User
+  Future<http.Response?> addUser({required User user}) async {
     final uri = Uri.parse(baseUri);
     late http.Response response;
 
@@ -68,10 +78,10 @@ class ApiHandler {
       return response;
     }
 
-    return response;
+    return null;
   }
 
-  Future<http.Response> deleteUser({required int userId}) async {
+  Future<http.Response?> deleteUser({required int userId}) async {
     final uri = Uri.parse("$baseUri/$userId");
 
     late http.Response response;
@@ -87,7 +97,7 @@ class ApiHandler {
       return response;
     }
 
-    return response;
+    return null;
   }
 
   Future<User> getUserById({required int userId}) async {

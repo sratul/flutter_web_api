@@ -15,11 +15,16 @@ class _AddUserState extends State<AddUser> {
   final _formKey = GlobalKey<FormBuilderState>();
   ApiHandler apiHandler = ApiHandler();
 
-  void addUser() async {
+  Future<void> addUser() async {
+    // Validate and save form; return false if invalid
     if (_formKey.currentState!.saveAndValidate()) {
+      // Retrieve form field values as a map
       final data = _formKey.currentState!.value;
 
+      // Create a User instance with form data; set userId to 0 (presumed 'new user')
       final user = User(userId: 0, name: data['name'], email: data['email']);
+
+      // Attempt to add the user asynchronously via API handler
 
       await apiHandler.addUser(user: user);
     }

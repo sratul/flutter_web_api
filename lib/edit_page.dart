@@ -18,8 +18,8 @@ class _EditPageState extends State<EditPage> {
   ApiHandler apiHandler = ApiHandler();
   late http.Response response;
 
-  void updateData() async{
-    if(_formKey.currentState!.saveAndValidate()){
+  void updateData() async {
+    if (_formKey.currentState!.saveAndValidate()) {
       final data = _formKey.currentState!.value;
 
       final user = User(
@@ -28,36 +28,58 @@ class _EditPageState extends State<EditPage> {
         email: data['email'],
       );
 
-      response = await apiHandler.UpdateUser(userId: widget.user.userId, user: user);
+      response = await apiHandler.updateUser(
+        userId: widget.user.userId,
+        user: user,
+      );
     }
-    if(!mounted) return;
+    if (!mounted) return;
     Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: const Text("Edit Page"),
-    centerTitle: true,
-    backgroundColor: Colors.deepPurple,
-    foregroundColor: Colors.white,),
-    bottomNavigationBar: MaterialButton(color: Colors.teal,textColor: Colors.white, padding: EdgeInsets.all(10),onPressed: updateData,child: Text("Update"),),
-    
-    body: Padding(padding: EdgeInsets.all(10),child: FormBuilder(key: _formKey,initialValue: {
-      'name': widget.user.name,
-      'email': widget.user.email
-    },child: Column(
-      children: [
-        FormBuilderTextField(name: 'name',
-        decoration: InputDecoration(labelText: 'Name'),
-        validator: FormBuilderValidators.compose([FormBuilderValidators.required()]),),
-        SizedBox(height: 10,),
-        FormBuilderTextField(name: 'email',
-        decoration: InputDecoration(labelText: 'Email'),
-        validator: FormBuilderValidators.compose([FormBuilderValidators.required()]),),
-      ],
-      
-    )
-    ),),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Edit Page"),
+        centerTitle: true,
+        backgroundColor: Colors.deepPurple,
+        foregroundColor: Colors.white,
+      ),
+      bottomNavigationBar: MaterialButton(
+        color: Colors.teal,
+        textColor: Colors.white,
+        padding: EdgeInsets.all(10),
+        onPressed: updateData,
+        child: Text("Update"),
+      ),
+
+      body: Padding(
+        padding: EdgeInsets.all(10),
+        child: FormBuilder(
+          key: _formKey,
+          initialValue: {'name': widget.user.name, 'email': widget.user.email},
+          child: Column(
+            children: [
+              FormBuilderTextField(
+                name: 'name',
+                decoration: InputDecoration(labelText: 'Name'),
+                validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(),
+                ]),
+              ),
+              SizedBox(height: 10),
+              FormBuilderTextField(
+                name: 'email',
+                decoration: InputDecoration(labelText: 'Email'),
+                validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(),
+                ]),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
