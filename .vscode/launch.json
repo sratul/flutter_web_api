@@ -8,6 +8,12 @@
             "name": "flutter_web_api",
             "request": "launch",
             "type": "dart",
+            "args": [
+                "d",
+                "chrome",
+                "--web-port",
+                "5000"
+            ]
         },
         {
             "name": "flutter_web_api (profile mode)",
