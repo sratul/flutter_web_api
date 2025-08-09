@@ -5,14 +5,14 @@ import 'package:flutter_web_api/edit_page.dart';
 import 'package:flutter_web_api/find_user.dart';
 import 'package:flutter_web_api/model.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _HomePageState extends State<HomePage> {
   ApiHandler apiHandler = ApiHandler();
   late List<User> data = [];
 
