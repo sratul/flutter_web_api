@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_web_api/add_user.dart';
+import 'package:flutter_web_api/pages/add_user.dart';
 import 'package:flutter_web_api/api_handler.dart';
-import 'package:flutter_web_api/edit_page.dart';
-import 'package:flutter_web_api/find_user.dart';
+import 'package:flutter_web_api/pages/edit_page.dart';
+import 'package:flutter_web_api/pages/find_user.dart';
 import 'package:flutter_web_api/model.dart';
 
 class HomePage extends StatefulWidget {
