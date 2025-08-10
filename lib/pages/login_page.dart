@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_api/auth_service.dart';
-import 'package:flutter_web_api/pages/home_page.dart';
+import 'package:flutter_web_api/pages/create_post_page.dart';
 import 'package:flutter_web_api/pages/register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -36,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
         //login successful, navigate to protected home page or dashboard
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => CreatePostPage()),
         );
       } else {
         // Login failed
