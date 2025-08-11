@@ -45,12 +45,9 @@ class PostService {
     }
   }
 
-  Future<bool> updatePost(
-    int id,
-    String title,
-    String body,
-    String token,
-  ) async {
+  Future<bool> updatePost(int id, String title, String body) async {
+    final token = await secureStorage.read(key: 'jwt_token');
+
     final response = await http.put(
       Uri.parse('$baseUri/$id'),
       headers: {

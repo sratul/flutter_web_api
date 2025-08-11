@@ -42,6 +42,94 @@ class _CreatePostPageState extends State<CreatePostPage> {
     }
   }
 
+  void _showEditDialog(BuildContext context, Post post) {
+    TextEditingController titleController = TextEditingController(
+      text: post.title,
+    );
+    TextEditingController bodyController = TextEditingController(
+      text: post.body,
+    );
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text('Edit Post'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(labelText: 'Title'),
+              ),
+              TextField(
+                controller: bodyController,
+                decoration: InputDecoration(labelText: 'Body'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () => Navigator.pop(ctx),
+            ),
+            TextButton(
+              child: Text('Save'),
+              onPressed: () async {
+                bool success = await _postService.updatePost(
+                  post.id!,
+                  titleController.text.trim(),
+                  bodyController.text.trim(),
+                );
+                if (success) {
+                  setState(() {
+                    _postsFuture = _postService.getPosts();
+                  });
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Post Updated!!')));
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, Post post) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Delete Post'),
+        content: Text('Are you sure you want to delete this post?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      bool success = await _postService.deletePost(post.id!);
+
+      if (success) {
+        setState(() {
+          _postsFuture = _postService.getPosts();
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Post deleted successfully')));
+      }
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -96,51 +184,14 @@ class _CreatePostPageState extends State<CreatePostPage> {
                             children: [
                               IconButton(
                                 icon: Icon(Icons.edit),
-                                onPressed: () {},
+                                onPressed: () {
+                                  _showEditDialog(context, post);
+                                },
                               ),
                               IconButton(
                                 icon: Icon(Icons.delete),
                                 onPressed: () async {
-                                  final confirmed = await showDialog<bool>(
-                                    context: context,
-                                    builder: (ctx) => AlertDialog(
-                                      title: Text('Delete Post'),
-                                      content: Text(
-                                        'Are you sure you want to delete this post?',
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(ctx, false),
-                                          child: Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(ctx, true),
-                                          child: Text('Delete'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                  if (confirmed == true) {
-                                    bool success = await _postService
-                                        .deletePost(post.id!);
-
-                                    if (success) {
-                                      setState(() {
-                                        _postsFuture = _postService.getPosts();
-                                      });
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            'Post deleted successfully',
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  }
+                                  _showDeleteDialog(context, post);
                                 },
                               ),
                             ],

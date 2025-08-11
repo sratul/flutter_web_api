@@ -75,7 +75,8 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(color: Colors.red),
                 ),
               ),
-            TextButton(
+            SizedBox(height: 10),
+            ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
