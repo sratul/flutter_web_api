@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_api/auth_service.dart';
 import 'package:flutter_web_api/pages/create_post_page.dart';
+import 'package:flutter_web_api/pages/forgot_password_page.dart';
 import 'package:flutter_web_api/pages/register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -75,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(color: Colors.red),
                 ),
               ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -83,7 +84,17 @@ class _LoginPageState extends State<LoginPage> {
                   MaterialPageRoute(builder: (context) => RegisterPage()),
                 );
               },
-              child: const Text("Register"),
+              child: const Text("Register ?"),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+                );
+              },
+              child: Text("Forgot Password??"),
             ),
           ],
         ),

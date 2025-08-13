@@ -69,4 +69,13 @@ class PostService {
     );
     return response.statusCode == 204;
   }
+
+  Future<bool> sendForgotPassword(String email) async {
+    final response = await http.post(
+      Uri.parse("$baseUri/auth/forgotpassword"),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email}),
+    );
+    return response.statusCode == 200;
+  }
 }
