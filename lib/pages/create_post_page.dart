@@ -12,6 +12,7 @@ class CreatePostPage extends StatefulWidget {
 class _CreatePostPageState extends State<CreatePostPage> {
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
+
   bool _isLoading = false;
   final PostService _postService = PostService();
   late Future<List<Post>> _postsFuture;
@@ -130,6 +131,47 @@ class _CreatePostPageState extends State<CreatePostPage> {
     }
   }
 
+  void _showCommentDialog(BuildContext context, Post post) {
+    TextEditingController _commentController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text('Add a Comment?'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _commentController,
+                decoration: InputDecoration(labelText: 'Comment'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              child: Text("Save"),
+              onPressed: () async {
+                final newComment = await _postService.postComment(
+                  post.id!,
+                  _commentController.text.trim(),
+                );
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('You commented')));
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -178,9 +220,39 @@ class _CreatePostPageState extends State<CreatePostPage> {
                         final post = posts[index];
                         return ListTile(
                           title: Text(post.title),
-                          subtitle: Text(post.body),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(post.body),
+                              Text(post.userId),
+                              IconButton(
+                                onPressed: () async {
+                                  final newCount = await _postService.likePost(
+                                    post.id!,
+                                  );
+                                  if (newCount != null) {
+                                    setState(() {
+                                      post.likeCount = newCount;
+                                    });
+                                  }
+                                },
+                                icon: Icon(Icons.thumb_up),
+                              ),
+                              Text('${post.likeCount}'),
+                              IconButton(
+                                onPressed: () {
+                                  _showCommentDialog(context, post);
+                                },
+                                icon: Icon(Icons.comment),
+                              ),
+
+                              // Text('${post.comments}'),
+                            ],
+                          ),
+
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               IconButton(
                                 icon: Icon(Icons.edit),

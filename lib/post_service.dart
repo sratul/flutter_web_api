@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'dart:js_interop';
+// import 'dart:js_interop';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_web_api/comment.dart';
 import 'package:http/http.dart' as http;
 import 'post.dart';
 
@@ -25,7 +26,7 @@ class PostService {
     if (response.statusCode == 201) {
       return Post.fromJson(jsonDecode(response.body));
     } else {
-      print('Failed to create post: ${response.body}');
+      print('${response.statusCode} Failed to create post: ${response.body}');
       return null;
     }
   }
@@ -77,5 +78,49 @@ class PostService {
       body: jsonEncode({'email': email}),
     );
     return response.statusCode == 200;
+  }
+
+  Future<int?> likePost(int postId) async {
+    final token = await secureStorage.read(key: 'jwt_token');
+    final response = await http.post(
+      Uri.parse('$baseUri/$postId/like'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print("${response.statusCode}");
+      final data = jsonDecode(response.body);
+      // API return: {likecount}
+
+      return data['likeCount'] as int;
+    }
+
+    return null;
+  }
+
+  Future<Comment?> postComment(int postId, String commentBody) async {
+    print('Comment Started');
+    final token = await secureStorage.read(key: 'jwt_token');
+
+    final response = await http.post(
+      Uri.parse('$baseUri/$postId/comments'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-type': 'application/json',
+      },
+      body: jsonEncode({'body': commentBody, 'postId': postId}),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      print('Comment 200');
+      return Comment.fromJson(jsonDecode(response.body));
+    }
+    print('Comment statuscode:${response.statusCode}');
+    return null;
+
+    print('Comment Ended');
   }
 }
