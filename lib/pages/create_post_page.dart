@@ -132,7 +132,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   }
 
   void _showCommentDialog(BuildContext context, Post post) {
-    TextEditingController _commentController = TextEditingController();
+    TextEditingController commentController = TextEditingController();
 
     showDialog(
       context: context,
@@ -143,7 +143,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: _commentController,
+                controller: commentController,
                 decoration: InputDecoration(labelText: 'Comment'),
               ),
             ],
@@ -157,13 +157,19 @@ class _CreatePostPageState extends State<CreatePostPage> {
               child: Text("Save"),
               onPressed: () async {
                 final newComment = await _postService.postComment(
-                  post.id!,
-                  _commentController.text.trim(),
+                  post,
+                  commentController.text.trim(),
                 );
                 Navigator.pop(ctx);
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text('You commented')));
+                if (newComment != null) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('You commented')));
+                } else {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Comment failed.')));
+                }
               },
             ),
           ],
@@ -245,8 +251,27 @@ class _CreatePostPageState extends State<CreatePostPage> {
                                 },
                                 icon: Icon(Icons.comment),
                               ),
-
-                              // Text('${post.comments}'),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: post.comments.length + 1,
+                                itemBuilder: (context, index) {
+                                  if (index == 0) {
+                                    return Padding(
+                                      padding: EdgeInsets.all(16),
+                                      child: Text(post.body),
+                                    );
+                                  }
+                                  final comment = post.comments[index - 1];
+                                  return ListTile(
+                                    leading: Icon(Icons.comment),
+                                    title: Text(comment.body),
+                                    subtitle: Text(
+                                      'by user: ${comment.userId}',
+                                    ),
+                                  );
+                                },
+                              ),
                             ],
                           ),
 

@@ -17,4 +17,11 @@ class Comment {
     userId: json['userId'],
     postId: json['postId'],
   );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'body': body,
+    'userId': userId,
+    'postId': postId,
+  };
 }
