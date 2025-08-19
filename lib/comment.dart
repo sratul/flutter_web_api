@@ -1,5 +1,5 @@
 class Comment {
-  int id;
+  int? id;
   String body;
   String userId;
   int postId;
@@ -12,9 +12,9 @@ class Comment {
   });
 
   factory Comment.fromJson(Map<String, dynamic> json) => Comment(
-    id: json['id'],
-    body: json['body'],
-    userId: json['userId'],
+    id: json['id'] as int?,
+    body: json['body'] as String,
+    userId: json['userId'] as String,
     postId: json['postId'],
   );
 
