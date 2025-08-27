@@ -47,6 +47,10 @@ class PostService {
         throw Exception('Unexpected JSON format');
       }
 
+      for (var item in body) {
+        print('Post comments field: ${item['comments']}');
+      }
+
       List<Post> posts = body
           .map((dynamic item) => Post.fromJson(item as Map<String, dynamic>))
           .toList();

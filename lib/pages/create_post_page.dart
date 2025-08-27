@@ -193,20 +193,42 @@ class _CreatePostPageState extends State<CreatePostPage> {
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            TextField(
-              controller: _titleController,
-              decoration: InputDecoration(labelText: 'Title'),
+            Card(
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Create a Post",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    TextField(
+                      controller: _titleController,
+                      decoration: InputDecoration(labelText: 'Title'),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _bodyController,
+                      decoration: InputDecoration(labelText: 'Body'),
+                      maxLines: 5,
+                    ),
+                    const SizedBox(height: 10),
+                    _isLoading
+                        ? CircularProgressIndicator()
+                        : ElevatedButton(
+                            onPressed: _submitPost,
+                            child: Text('Post'),
+                          ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _bodyController,
-              decoration: InputDecoration(labelText: 'Body'),
-              maxLines: 5,
-            ),
-            const SizedBox(height: 10),
-            _isLoading
-                ? CircularProgressIndicator()
-                : ElevatedButton(onPressed: _submitPost, child: Text('Post')),
+
             const SizedBox(height: 20),
             Expanded(
               child: FutureBuilder<List<Post>>(
@@ -224,74 +246,89 @@ class _CreatePostPageState extends State<CreatePostPage> {
                       itemCount: posts.length,
                       itemBuilder: (context, index) {
                         final post = posts[index];
-                        return ListTile(
-                          title: Text(post.title),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(post.body),
-                              Text(post.userId),
-                              IconButton(
-                                onPressed: () async {
-                                  final newCount = await _postService.likePost(
-                                    post.id!,
-                                  );
-                                  if (newCount != null) {
-                                    setState(() {
-                                      post.likeCount = newCount;
-                                    });
-                                  }
-                                },
-                                icon: Icon(Icons.thumb_up),
-                              ),
-                              Text('${post.likeCount}'),
-                              IconButton(
-                                onPressed: () {
-                                  _showCommentDialog(context, post);
-                                },
-                                icon: Icon(Icons.comment),
-                              ),
-                              ListView.builder(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: post.comments.length + 1,
-                                itemBuilder: (context, index) {
-                                  if (index == 0) {
-                                    return Padding(
-                                      padding: EdgeInsets.all(16),
-                                      child: Text(post.body),
-                                    );
-                                  }
-                                  final comment = post.comments[index - 1];
-                                  return ListTile(
-                                    leading: Icon(Icons.comment),
-                                    title: Text(comment.body),
-                                    subtitle: Text(
-                                      'by user: ${comment.userId}',
+                        return Card(
+                          elevation: 4,
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ListTile(
+                                  title: Text(
+                                    post.title,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(post.body),
+                                      Text(post.userId),
+                                      IconButton(
+                                        onPressed: () async {
+                                          final newCount = await _postService
+                                              .likePost(post.id!);
+                                          if (newCount != null) {
+                                            setState(() {
+                                              post.likeCount = newCount;
+                                            });
+                                          }
+                                        },
+                                        icon: Icon(Icons.thumb_up),
+                                      ),
+                                      Text('${post.likeCount}'),
+                                      IconButton(
+                                        onPressed: () {
+                                          _showCommentDialog(context, post);
+                                        },
+                                        icon: Icon(Icons.comment),
+                                      ),
+                                      ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: post.comments.length,
+                                        itemBuilder: (context, index) {
+                                          // if (index == 0) {
+                                          //   return null;
+                                          // }
+                                          final comment = post.comments[index];
+                                          return ListTile(
+                                            leading: Icon(Icons.comment),
+                                            title: Text(comment.body),
+                                            subtitle: Text(
+                                              'by user: ${comment.userId}',
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      Text('Comments: ${post.comments.length}'),
+                                    ],
+                                  ),
 
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.edit),
-                                onPressed: () {
-                                  _showEditDialog(context, post);
-                                },
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.delete),
-                                onPressed: () async {
-                                  _showDeleteDialog(context, post);
-                                },
-                              ),
-                            ],
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.edit),
+                                        onPressed: () {
+                                          _showEditDialog(context, post);
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: Icon(Icons.delete),
+                                        onPressed: () async {
+                                          _showDeleteDialog(context, post);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },

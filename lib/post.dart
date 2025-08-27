@@ -23,14 +23,15 @@ class Post {
     if (json['comments'] != null) {
       if (json['comments'] is List) {
         parsedComments = (json['comments'] as List)
-            .map((item) => Comment.fromJson(item as Map<String, dynamic>))
+            .whereType<Map<String, dynamic>>()
+            .map((item) => Comment.fromJson(item))
             .toList();
       } else if (json['comments'] is Map) {
         final commentsMap = json['comments'] as Map<String, dynamic>;
         parsedComments = commentsMap.entries
-            .map(
-              (entry) => Comment.fromJson(entry.value as Map<String, dynamic>),
-            )
+            .map((entry) => entry.value)
+            .whereType<Map<String, dynamic>>()
+            .map((item) => Comment.fromJson(item))
             .toList();
       }
     }
