@@ -20,21 +20,30 @@ class Post {
   factory Post.fromJson(Map<String, dynamic> json) {
     List<Comment> parsedComments = [];
 
-    if (json['comments'] != null) {
-      if (json['comments'] is List) {
-        parsedComments = (json['comments'] as List)
-            .whereType<Map<String, dynamic>>()
-            .map((item) => Comment.fromJson(item))
-            .toList();
-      } else if (json['comments'] is Map) {
-        final commentsMap = json['comments'] as Map<String, dynamic>;
-        parsedComments = commentsMap.entries
-            .map((entry) => entry.value)
-            .whereType<Map<String, dynamic>>()
-            .map((item) => Comment.fromJson(item))
-            .toList();
-      }
+    if (json['comments'] != null &&
+        json['comments'] is Map &&
+        json['comments'].containsKey(r'$values')) {
+      final List<dynamic> values = json['comments'][r'$values'];
+      parsedComments = values
+          .whereType<Map<String, dynamic>>()
+          .map((item) => Comment.fromJson(item))
+          .toList();
     }
+    // if (json['comments'] != null) {
+    //   if (json['comments'] is List) {
+    //     parsedComments = (json['comments'] as List)
+    //         .whereType<Map<String, dynamic>>()
+    //         .map((item) => Comment.fromJson(item))
+    //         .toList();
+    //   } else if (json['comments'] is Map) {
+    //     final commentsMap = json['comments'] as Map<String, dynamic>;
+    //     parsedComments = commentsMap.entries
+    //         .map((entry) => entry.value)
+    //         .whereType<Map<String, dynamic>>()
+    //         .map((item) => Comment.fromJson(item))
+    //         .toList();
+    //   }
+    // }
     return Post(
       id: json['id'] as int?,
       title: json['title'] as String,

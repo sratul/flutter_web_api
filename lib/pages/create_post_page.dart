@@ -99,6 +99,48 @@ class _CreatePostPageState extends State<CreatePostPage> {
     );
   }
 
+  void _showDeleteCommentDialog(
+    BuildContext context,
+    String postId,
+    String commentId,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Delete Comment'),
+        content: Text('Are you sure you want to delete this comment?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      bool success = await _postService.deleteComment(postId, commentId);
+      if (success) {
+        setState(() {
+          _postsFuture = _postService.getPosts(); // refresh posts and comments
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Comment deleted successfully')));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('You do not have permission to delete this comment'),
+          ),
+        );
+      }
+    }
+  }
+
   void _showDeleteDialog(BuildContext context, Post post) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -127,6 +169,10 @@ class _CreatePostPageState extends State<CreatePostPage> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Post deleted successfully')));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('You dont have permission to delete')),
+        );
       }
     }
   }
@@ -207,15 +253,15 @@ class _CreatePostPageState extends State<CreatePostPage> {
                         fontSize: 16,
                       ),
                     ),
-                    TextField(
-                      controller: _titleController,
-                      decoration: InputDecoration(labelText: 'Title'),
-                    ),
-                    const SizedBox(height: 10),
+                    // TextField(
+                    //   controller: _titleController,
+                    //   decoration: InputDecoration(labelText: 'Title'),
+                    // ),
+                    // const SizedBox(height: 10),
                     TextField(
                       controller: _bodyController,
                       decoration: InputDecoration(labelText: 'Body'),
-                      maxLines: 5,
+                      maxLines: 2,
                     ),
                     const SizedBox(height: 10),
                     _isLoading
@@ -244,8 +290,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     final posts = snapshot.data!;
                     return ListView.builder(
                       itemCount: posts.length,
-                      itemBuilder: (context, index) {
-                        final post = posts[index];
+                      itemBuilder: (context, postIndex) {
+                        final post = posts[postIndex];
                         return Card(
                           elevation: 4,
                           margin: const EdgeInsets.symmetric(vertical: 10),
@@ -286,24 +332,43 @@ class _CreatePostPageState extends State<CreatePostPage> {
                                         },
                                         icon: Icon(Icons.comment),
                                       ),
-                                      ListView.builder(
-                                        shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        itemCount: post.comments.length,
-                                        itemBuilder: (context, index) {
-                                          // if (index == 0) {
-                                          //   return null;
-                                          // }
-                                          final comment = post.comments[index];
-                                          return ListTile(
-                                            leading: Icon(Icons.comment),
-                                            title: Text(comment.body),
-                                            subtitle: Text(
-                                              'by user: ${comment.userId}',
-                                            ),
-                                          );
-                                        },
-                                      ),
+                                      post.comments.isNotEmpty
+                                          ? ListView.builder(
+                                              shrinkWrap: true,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              itemCount: post.comments.length,
+                                              itemBuilder: (context, commentIndex) {
+                                                // if (index == 0) {
+                                                //   return null;
+                                                // }
+                                                final comment =
+                                                    post.comments[commentIndex];
+                                                return ListTile(
+                                                  leading: Icon(Icons.comment),
+                                                  title: Text(comment.body),
+                                                  subtitle: Text(
+                                                    'By user: ${comment.userId}  ${comment.createdAt != null ? comment.createdAt?.toLocal().toIso8601String() : ""}',
+                                                  ),
+                                                  trailing:
+                                                      currentUserIsAuthorized
+                                                      ? IconButton(
+                                                          onPressed: () {
+                                                            _showDeleteCommentDialog(
+                                                              context,
+                                                              post.id!,
+                                                              comment.id!,
+                                                            );
+                                                          },
+                                                          icon: Icon(
+                                                            Icons.delete,
+                                                          ),
+                                                        )
+                                                      : null,
+                                                );
+                                              },
+                                            )
+                                          : Text('No comments'),
                                       Text('Comments: ${post.comments.length}'),
                                     ],
                                   ),

@@ -83,7 +83,15 @@ class PostService {
       Uri.parse('$baseUri/$id'),
       headers: {if (token != null) 'Authorization': 'Bearer $token'},
     );
+
+    print('${response.statusCode}');
     return response.statusCode == 204;
+  }
+
+  Future<bool> deleteComment(int postId, int commentId) async {
+    final token = await  
+
+    return false;
   }
 
   Future<bool> sendForgotPassword(String email) async {
@@ -151,8 +159,8 @@ class PostService {
       },
       body: jsonEncode({
         'body': commentBody,
-        // 'postId': post.id,
-        // 'userId': userId,
+        'postId': post.id,
+        'userId': userId,
         // 'post': post,
       }),
     );
